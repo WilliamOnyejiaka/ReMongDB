@@ -25,7 +25,7 @@ def add_note():
 def get_note(id:str):
     user_id = get_jwt_identity()
     user_notes = Note.get_note(id,user_id)
-    return jsonify({'error':False,'message':user_notes}),200
+    return jsonify({'error':False,'data':user_notes}),200
 
 @note.get("/get_notes")
 @jwt_required()
@@ -68,7 +68,7 @@ def search_pagination(search_param):
     pagination_results:Dict = Pagination(Note.search(user_id,search_param),page,limit).meta_data()
     return jsonify({'error':False,'data':pagination_results}),200
 
-@note.patch("/update_note/title/<id>")
+@note.patch("/update/title/<id>")
 @jwt_required()
 def update_title(id):
     user_id = get_jwt_identity()
@@ -81,7 +81,7 @@ def update_title(id):
         return jsonify({'error':False,'message':"note has been updated successfully"}),200
     return jsonify({'error':True,'message':"something went wrong"}),500
 
-@note.patch("/update_note/body/<id>")
+@note.patch("/update/body/<id>")
 @jwt_required()
 def update_body(id):
     user_id = get_jwt_identity()
@@ -92,4 +92,15 @@ def update_body(id):
     
     if Note.update_body(id,new_body,user_id):
         return jsonify({'error':False,'message':"note body updated successfully"}),200
+    return jsonify({'error':True,'message':"something went wrong"}),500
+
+@note.delete("/delete/<id>")
+@jwt_required()
+def delete(id):
+    user_id = get_jwt_identity()
+    if not Note.get_note(id,user_id):
+        return jsonify({'error':True,'message':"note does not exist"}),400
+    
+    if Note.delete(id,user_id):
+        return jsonify({'error':False,'message':"note deleted successfully"}),200
     return jsonify({'error':True,'message':"something went wrong"}),500

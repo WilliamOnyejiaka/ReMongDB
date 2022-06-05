@@ -1,4 +1,3 @@
-from turtle import update
 from typing import Dict, List
 from . import db
 from datetime import datetime
@@ -28,7 +27,7 @@ class Note:
         return Serializer(needed_attributes).serialize(query) if query else {}
 
     @staticmethod
-    def get_notes(user_id: str, needed_attributes: List = ['_id', 'title', 'body', 'user_id', 'created_at', 'updated_at']) -> Dict:
+    def get_notes(user_id: str, needed_attributes: List = ['_id', 'title', 'body', 'user_id', 'created_at', 'updated_at']) -> Dict or List:
         query = notes.find({'user_id': user_id}).sort('_id')
 
         if query:
@@ -65,8 +64,14 @@ class Note:
 
     @staticmethod
     def update_title(id: str, new_title: str, user_id: str) -> bool:
-       return Note.__update(id,user_id,['title',new_title,])
+        return Note.__update(id,user_id,['title',new_title,])
 
     @staticmethod
     def update_body(id:str,new_body:str,user_id:str) -> bool:
         return Note.__update(id,user_id,['body',new_body])
+    
+    @staticmethod
+    def delete(id:str,user_id:str) -> bool:
+        query = notes.find_one_and_delete({'_id':ObjectId(id),'user_id':user_id})
+        print(query)
+        return True if query else False

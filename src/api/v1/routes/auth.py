@@ -68,3 +68,15 @@ def new_access_token():
     user_id = get_jwt_identity()
     access_token = create_access_token(identity=user_id)
     return jsonify({'access_token':access_token}),201
+
+@auth.delete("/delete")
+@jwt_required()
+def delete():
+    user_id = get_jwt_identity()
+
+    if not User.get_user_with_id(user_id):
+        return jsonify({'error':True,'message':"user does not exists"}),400
+    
+    if User.delete(user_id):
+        return jsonify({'error':False,'message':"user deleted successfully"}),200
+    return  jsonify({'error':True,'message':"something went wrong"}),500
