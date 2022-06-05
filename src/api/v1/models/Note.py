@@ -73,5 +73,4 @@ class Note:
     @staticmethod
     def delete(id:str,user_id:str) -> bool:
         query = notes.find_one_and_delete({'_id':ObjectId(id),'user_id':user_id})
-        print(query)
         return True if query else False
